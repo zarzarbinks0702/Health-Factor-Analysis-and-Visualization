@@ -1,4 +1,7 @@
 /***********************************************************************/
+//define the datafile
+const healthData = 'assets/data.csv'
+
 //set static svg/chart variables
 var svgWidth = 960;
 var svgHeight = 500;
@@ -25,13 +28,28 @@ var chartGroup = svg.append('g')
   .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
 /***********************************************************************/
-//helper function for pulling the relevant lines out of the csv
+//function for converting the relevant lines of the csv to integers
 function rowUpdate(row) {
-  row.abbr = +row.abbr;
   row.income = +row.income;
   row.obesity = +row.obesity;
   return row;
 }
 /***********************************************************************/
+//import the data
+d3.csv(healthData, rowUpdate).then(createScatter);
+/***********************************************************************/
+//function to create the scatter chart
+function createScatter(data) {
+  console.table(data);
 
+  //create y axis scale (income)
+  let yIncomeScale = d3.scaleLinear()
+    .domain([0, d3.max(data, (d) => d.income)])
+    .range([chartHeight, 0]);
+
+  //create x axis scale (obesity)
+  let xObesityScale = d3.scaleLinear()
+    .domain([0, d3.max(data, (d) => d.obesity)])
+    .range([0, chartWidth]);
+}
 /***********************************************************************/
