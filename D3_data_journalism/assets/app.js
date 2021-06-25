@@ -18,7 +18,7 @@ var chartHeight = svgHeight - margin.top - margin.bottom;
 
 //svg wrapper and append to index.html
 var svg = d3
-  .select('.chart')
+  .select('#scatter')
   .append('svg')
   .attr('width', svgWidth)
   .attr('height', svgHeight);
@@ -51,5 +51,11 @@ function createScatter(data) {
   let xObesityScale = d3.scaleLinear()
     .domain([0, d3.max(data, (d) => d.obesity)])
     .range([0, chartWidth]);
+
+  //add the axis to the chart
+  let xAxis = d3.axisBottom(xObesityScale);
+  let yAxis = d3.axisLeft(yIncomeScale);
+  chartGroup.append("g").call(yAxis);
+  chartGroup.append("g").call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
 }
 /***********************************************************************/
