@@ -57,5 +57,16 @@ function createScatter(data) {
   let yAxis = d3.axisLeft(yIncomeScale);
   chartGroup.append("g").call(yAxis);
   chartGroup.append("g").call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
+
+  //create scatter circles
+  var scatterCircles = chartGroup.selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("cx", d => xObesityScale(d.obesity))
+      .attr("cy", d => yIncomeScale(d.income))
+      .attr("r", "15")
+      .attr("fill", "blue")
+      .attr("opacity", '0.5');
 }
 /***********************************************************************/
