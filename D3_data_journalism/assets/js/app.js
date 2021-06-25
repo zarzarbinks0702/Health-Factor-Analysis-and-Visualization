@@ -1,3 +1,4 @@
+/***********************************************************************/
 //set static svg/chart variables
 var svgWidth = 960;
 var svgHeight = 500;
@@ -22,3 +23,15 @@ var svg = d3
 //append svg to chart group
 var chartGroup = svg.append('g')
   .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+/***********************************************************************/
+//helper function for pulling the relevant lines out of the csv
+function rowUpdate(row) {
+  row.abbr = +row.abbr;
+  row.income = +row.income;
+  row.obesity = +row.obesity;
+  return row;
+}
+/***********************************************************************/
+
+/***********************************************************************/
