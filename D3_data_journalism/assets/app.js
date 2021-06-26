@@ -69,6 +69,13 @@ function createScatter(data) {
       .attr("opacity", '0.5');
 
   //add state abbreveations to the circles
+  var stateLabels = chartGroup.selectAll("text")
+      .data(data)
+      .enter()
+      .append("text")
+      .text(d => `${d.abbr}`)
+      .attr("x", d => xSmokesScale(d.smokes))
+      .attr("y", d => yIncomeScale(d.income));
   //add axes labels to chart
     chartGroup.append("text")
     .attr("class", "axisText")
