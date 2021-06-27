@@ -136,17 +136,17 @@ function createScatter(data) {
 
   //add y-axes labels to chart
     var yIncome = chartGroup.append("text")
-    .attr("class", "axisText")
+    .attr("class", "axisText yaxis")
     .text("Median Income (USD)")
     .attr("transform", ` translate(-55, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
     var yPoverty = chartGroup.append("text")
-    .attr("class", "axisText")
+    .attr("class", "axisText yaxis")
     .text("In Poverty (%)")
     .attr("transform", ` translate(-80, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
     var yAge = chartGroup.append("text")
-    .attr("class", "axisText")
+    .attr("class", "axisText yaxis")
     .text("Age (Median)")
     .attr("transform", ` translate(-105, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
@@ -154,33 +154,33 @@ function createScatter(data) {
     var xSmokes = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 10)
-      .attr("class", "axisText")
+      .attr("class", "axisText xaxis")
       .text("Smokers (%)")
       .attr('transform', 'scale(1.1)');
 
     var xObesity = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 35)
-      .attr("class", "axisText")
+      .attr("class", "axisText xaxis")
       .text("Obesity (%)")
       .attr('transform', 'scale(1.1)');
 
     var xHealthcare = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 60)
-      .attr("class", "axisText")
+      .attr("class", "axisText xaxis")
       .text("Lacks Healthcare (%)")
       .attr('transform', 'scale(1.1)');
 
     //handle click event for x axis
-    chartGroup.selectAll(".axisText")
+    chartGroup.selectAll(".xaxis")
       .on("click", function() {
         //get value of selection
         var xValue = d3.select(this).attr("value");
         if (xValue !== chosenX) {
 
           chosenX = xValue;
-          xLinearScale = xScale(hairData, chosenXAxis);
+          xLinearScale = xScale(data, chosenX);
           xAxis = renderAxes(xLinearScale, xAxis);
           circlesGroup = renderCircles(circlesGroup, xLinScale, chosenX, newYScale, chosenY);
 
@@ -218,8 +218,54 @@ function createScatter(data) {
               .classed("inactive", false);
             }
           }
-        }
-      });
+        });
+      //handle click event for y axis
+      chartGroup.selectAll(".yaxis")
+        .on("click", function() {
+          //get value of selection
+          var yValue = d3.select(this).attr("value");
+          if (yValue !== chosenY) {
+
+            chosenY = yValue;
+            yLinearScale = yScale(data, chosenY);
+            yAxis = renderAxes(yLinearScale, yAxis);
+            circlesGroup = renderCircles(circlesGroup, xLinScale, chosenX, newYScale, chosenY);
+
+            if (chosenY === "income") {
+              yIncome
+                .classed("active", true)
+                .classed("inactive", false);
+              yPoverty
+                .classed("active", false)
+                .classed("inactive", true);
+              yAge
+                .classed("active", false)
+                .classed("inactive", true);
+            }
+            else if (chosenX === 'poverty') {
+              yIncome
+                .classed("active", false)
+                .classed("inactive", true);
+              yPoverty
+                .classed("active", true)
+                .classed("inactive", false);
+              yAge
+                .classed("active", false)
+                .classed("inactive", true);
+            }
+            else {
+              yIncome
+                .classed("active", false)
+                .classed("inactive", true);
+              yPoverty
+                .classed("active", false)
+                .classed("inactive", true);
+              yAge
+                .classed("active", true)
+                .classed("inactive", false);
+              }
+            }
+          });
 }
 /***********************************************************************/
 //handle click event for axes
