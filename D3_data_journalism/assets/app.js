@@ -26,6 +26,9 @@ var svg = d3.select('#scatter')
 var chartGroup = svg.append('g')
   .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
+//set initial variables
+var chosenX = 'smokes'
+var chosenY = 'income'
 /***********************************************************************/
 //function for converting the relevant lines of the csv to integers
 function rowUpdate(row) {
@@ -59,6 +62,29 @@ function xScale(data, chosenY) {
     .range([0, chartWidth]);
 
   return xLinScale;
+}
+/***********************************************************************/
+//following block from week 16-D3, Day 3, Activity 12
+//update x axis when a label is clicked
+function renderX(newXScale, xAxis) {
+  var bottomAxis = d3.axisBottom(newXScale);
+
+  xAxis.transition()
+    .duration(1000)
+    .call(bottomAxis);
+
+  return xAxis;
+}
+
+//update y axis when a label is clicked
+function renderAxes(newYScale, yAxis) {
+  var leftAxis = d3.axisLeft(newYScale);
+
+  yAxis.transition()
+    .duration(1000)
+    .call(leftAxis);
+
+  return yAxis;
 }
 /***********************************************************************/
 //function to create the scatter chart
