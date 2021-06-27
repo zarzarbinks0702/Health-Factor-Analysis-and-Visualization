@@ -31,29 +31,43 @@ var chartGroup = svg.append('g')
 function rowUpdate(row) {
   row.income = +row.income;
   row.smokes = +row.smokes;
+  row.healthcare = +row.healthcare;
+  row.obesity = +row.obesity;
+  row.poverty = +row.poverty;
+  row.healthcare = +row.healthcare;
   return row;
 }
 /***********************************************************************/
 //import the data
 d3.csv(healthData, rowUpdate).then(createScatter);
 /***********************************************************************/
+//create y axis scale
+function yScale(data, chosenX) {
+
+  let yLinScale = d3.scaleLinear()
+    .domain([0, d3.max(data, (d) => d.[chosenX])])
+    .range([chartHeight, 0]);
+
+  return yLinScale;
+}
+
+//create x axis scale
+function xScale(data, chosenY) {
+
+  let xLinScale = d3.scaleLinear()
+    .domain([0, d3.max(data, (d) => d.chosenY)])
+    .range([0, chartWidth]);
+
+  return xLinScale;
+}
+/***********************************************************************/
 //function to create the scatter chart
 function createScatter(data) {
   console.table(data);
 
-  //create y axis scale (income)
-  let yIncomeScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d.income)])
-    .range([chartHeight, 0]);
-
-  //create x axis scale (smokes)
-  let xSmokesScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d.smokes)])
-    .range([0, chartWidth]);
-
   //add the axis to the chart
-  let xAxis = d3.axisBottom(xSmokesScale);
-  let yAxis = d3.axisLeft(yIncomeScale);
+  let xAxis = d3.axisBottom(xLinScale);
+  let yAxis = d3.axisLeft(yLinScale);
   chartGroup.append("g").call(yAxis);
   chartGroup.append("g").call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
 
@@ -63,8 +77,8 @@ function createScatter(data) {
       .enter()
       .append("circle")
       .classed('.stateCircle', true)
-      .attr("cx", d => xSmokesScale(d.smokes))
-      .attr("cy", d => yIncomeScale(d.income))
+      .attr("cx", d => xLinScale(d.smokes))
+      .attr("cy", d => yLinScale(d.income))
       .attr("r", "15")
       .attr("fill", "blue")
       .attr("opacity", '0.5');
