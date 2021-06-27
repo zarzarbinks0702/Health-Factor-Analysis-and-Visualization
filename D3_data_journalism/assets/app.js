@@ -9,8 +9,8 @@ var svgHeight = 500;
 var margin = {
   top: 30,
   right: 40,
-  bottom: 100,
-  left: 100
+  bottom: 125,
+  left: 125
 };
 
 var chartWidth = svgWidth - margin.left - margin.right;
@@ -58,10 +58,11 @@ function createScatter(data) {
   chartGroup.append("g").call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
 
   //create scatter circles
-  var scatterCircles = chartGroup.selectAll("circle")
+  var scatterCircles = chartGroup.selectAll(".stateCircle")
       .data(data)
       .enter()
       .append("circle")
+      .classed('.stateCircle', true)
       .attr("cx", d => xSmokesScale(d.smokes))
       .attr("cy", d => yIncomeScale(d.income))
       .attr("r", "15")
@@ -77,17 +78,42 @@ function createScatter(data) {
       .text(d => `${d.abbr}`)
       .attr("x", d => xSmokesScale(d.smokes))
       .attr("y", d => yIncomeScale(d.income) + 7);
-  //add axes labels to chart
+  //add y-axes labels to chart
     chartGroup.append("text")
     .attr("class", "axisText")
     .text("Median Income (USD)")
     .attr("transform", ` translate(-55, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
+    chartGroup.append("text")
+    .attr("class", "axisText")
+    .text("In Poverty (%)")
+    .attr("transform", ` translate(-80, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
+
+    chartGroup.append("text")
+    .attr("class", "axisText")
+    .text("Age (Median)")
+    .attr("transform", ` translate(-105, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
+  //add x-axes labels to chart
   chartGroup.append("text")
     .attr("x", chartWidth / 2.5)
     .attr("y", chartHeight + 10)
     .attr("class", "axisText")
     .text("Smokers (%)")
     .attr('transform', 'scale(1.1)');
+
+    chartGroup.append("text")
+      .attr("x", chartWidth / 2.5)
+      .attr("y", chartHeight + 35)
+      .attr("class", "axisText")
+      .text("Obesity (%)")
+      .attr('transform', 'scale(1.1)');
+
+      chartGroup.append("text")
+        .attr("x", chartWidth / 2.5)
+        .attr("y", chartHeight + 60)
+        .attr("class", "axisText")
+        .text("Lacks Healthcare (%)")
+        .attr('transform', 'scale(1.1)');
+
 }
 /***********************************************************************/
