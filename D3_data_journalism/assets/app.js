@@ -87,9 +87,24 @@ function renderAxes(newYScale, yAxis) {
   return yAxis;
 }
 /***********************************************************************/
+//create circles based on chosed data to transition between data points
+function renderCircles(circlesGroup, newXScale, chosenX, newYScale, chosenY) {
+
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenX]))
+    .attr('cy', d => newYScale(d[chosenY]));
+
+  return circlesGroup;
+}
+/***********************************************************************/
 //function to create the scatter chart
 function createScatter(data) {
   console.table(data);
+
+  //set x and y axis scales
+  var xLinScale = xScale(data, chosenX);
+  var yLinScale = yScale(data, chosenY);
 
   //add the axis to the chart
   let xAxis = d3.axisBottom(xLinScale);
@@ -103,8 +118,8 @@ function createScatter(data) {
       .enter()
       .append("circle")
       .classed('.stateCircle', true)
-      .attr("cx", d => xLinScale(d.smokes))
-      .attr("cy", d => yLinScale(d.income))
+      .attr("cx", d => xLinScale(d[chosenX]))
+      .attr("cy", d => yLinScale(d[chosenY]))
       .attr("r", "15")
       .attr("fill", "blue")
       .attr("opacity", '0.5');
