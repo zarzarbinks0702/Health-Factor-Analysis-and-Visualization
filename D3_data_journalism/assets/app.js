@@ -133,42 +133,93 @@ function createScatter(data) {
       .text(d => `${d.abbr}`)
       .attr("x", d => xLinScale(d[chosenX]))
       .attr("y", d => yLinScale(d[chosenY]) + 7);
+
   //add y-axes labels to chart
-    chartGroup.append("text")
+    var yIncome = chartGroup.append("text")
     .attr("class", "axisText")
     .text("Median Income (USD)")
     .attr("transform", ` translate(-55, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
-    chartGroup.append("text")
+    var yPoverty = chartGroup.append("text")
     .attr("class", "axisText")
     .text("In Poverty (%)")
     .attr("transform", ` translate(-80, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
-    chartGroup.append("text")
+    var yAge = chartGroup.append("text")
     .attr("class", "axisText")
     .text("Age (Median)")
     .attr("transform", ` translate(-105, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
-  //add x-axes labels to chart
-  chartGroup.append("text")
-    .attr("x", chartWidth / 2.5)
-    .attr("y", chartHeight + 10)
-    .attr("class", "axisText")
-    .text("Smokers (%)")
-    .attr('transform', 'scale(1.1)');
 
-    chartGroup.append("text")
+  //add x-axes labels to chart
+    var xSmokes = chartGroup.append("text")
+      .attr("x", chartWidth / 2.5)
+      .attr("y", chartHeight + 10)
+      .attr("class", "axisText")
+      .text("Smokers (%)")
+      .attr('transform', 'scale(1.1)');
+
+    var xObesity = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 35)
       .attr("class", "axisText")
       .text("Obesity (%)")
       .attr('transform', 'scale(1.1)');
 
-      chartGroup.append("text")
-        .attr("x", chartWidth / 2.5)
-        .attr("y", chartHeight + 60)
-        .attr("class", "axisText")
-        .text("Lacks Healthcare (%)")
-        .attr('transform', 'scale(1.1)');
+    var xHealthcare = chartGroup.append("text")
+      .attr("x", chartWidth / 2.5)
+      .attr("y", chartHeight + 60)
+      .attr("class", "axisText")
+      .text("Lacks Healthcare (%)")
+      .attr('transform', 'scale(1.1)');
 
+    //handle click event for x axis
+    chartGroup.selectAll(".axisText")
+      .on("click", function() {
+        //get value of selection
+        var xValue = d3.select(this).attr("value");
+        if (xValue !== chosenX) {
+
+          chosenX = xValue;
+          xLinearScale = xScale(hairData, chosenXAxis);
+          xAxis = renderAxes(xLinearScale, xAxis);
+          circlesGroup = renderCircles(circlesGroup, xLinScale, chosenX, newYScale, chosenY);
+
+          if (chosenX === "smokes") {
+            xSmokes
+              .classed("active", true)
+              .classed("inactive", false);
+            xObesity
+              .classed("active", false)
+              .classed("inactive", true);
+            xHealthcare
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else if (chosenX === 'obesity') {
+            xSmokes
+              .classed("active", false)
+              .classed("inactive", true);
+            xObesity
+              .classed("active", true)
+              .classed("inactive", false);
+            xHealthcare
+              .classed("active", false)
+              .classed("inactive", true);
+          }
+          else {
+            xSmokes
+              .classed("active", false)
+              .classed("inactive", true);
+            xObesity
+              .classed("active", false)
+              .classed("inactive", true);
+            xHealthcare
+              .classed("active", true)
+              .classed("inactive", false);
+            }
+          }
+        }
+      });
 }
 /***********************************************************************/
+//handle click event for axes
