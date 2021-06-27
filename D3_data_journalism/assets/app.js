@@ -48,7 +48,7 @@ d3.csv(healthData, rowUpdate).then(createScatter);
 function yScale(data, chosenX) {
 
   let yLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d.[chosenX])])
+    .domain([0, d3.max(data, (d) => d[chosenX])])
     .range([chartHeight, 0]);
 
   return yLinScale;
@@ -58,7 +58,7 @@ function yScale(data, chosenX) {
 function xScale(data, chosenY) {
 
   let xLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d.chosenY)])
+    .domain([0, d3.max(data, (d) => d[chosenY])])
     .range([0, chartWidth]);
 
   return xLinScale;
@@ -131,8 +131,8 @@ function createScatter(data) {
       .append("text")
       .classed('stateText', true)
       .text(d => `${d.abbr}`)
-      .attr("x", d => xSmokesScale(d.smokes))
-      .attr("y", d => yIncomeScale(d.income) + 7);
+      .attr("x", d => xLinScale(d[chosenX]))
+      .attr("y", d => yLinScale(d[chosenY]) + 7);
   //add y-axes labels to chart
     chartGroup.append("text")
     .attr("class", "axisText")
