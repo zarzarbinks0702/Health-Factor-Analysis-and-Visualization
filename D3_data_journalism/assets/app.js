@@ -45,20 +45,20 @@ function rowUpdate(row) {
 d3.csv(healthData, rowUpdate).then(createScatter);
 /***********************************************************************/
 //create y axis scale
-function yScale(data, chosenY) {
+function yScale(data, Y) {
 
   let yLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d[chosenY])])
+    .domain([d3.min(data, (d) => d[Y]), d3.max(data, (d) => d[Y])])
     .range([chartHeight, 0]);
 
   return yLinScale;
 }
 
 //create x axis scale
-function xScale(data, chosenX) {
+function xScale(data, X) {
 
   let xLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d[chosenX])])
+    .domain([d3.min(data, (d) => d[X]), d3.max(data, (d) => d[X])])
     .range([0, chartWidth]);
 
   return xLinScale;
@@ -82,6 +82,7 @@ function moveCirclesY(circlesGroup, newYScale, chosenY, stateLabels) {
     .attr('cy', d => newYScale(d[chosenY]));
   stateLabels
     .attr("y", d => newYScale(d[chosenY]) + 7);
+
 
   return circlesGroup;
 }
@@ -126,23 +127,23 @@ function createScatter(data) {
     .attr("class", "axisText yaxis active")
     .text("Median Income (USD)")
     .attr("value", 'income')
-    .attr("transform", ` translate(-55, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
+    .attr("transform", ` translate(-55, ${chartHeight / 2}) rotate(-90) scale(1.1)`);
 
     var yPoverty = chartGroup.append("text")
     .attr("class", "axisText yaxis inactive")
     .text("In Poverty (%)")
     .attr("value", 'poverty')
-    .attr("transform", ` translate(-80, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
+    .attr("transform", ` translate(-80, ${chartHeight / 2}) rotate(-90) scale(1.1)`);
 
     var yAge = chartGroup.append("text")
     .attr("class", "axisText yaxis inactive")
     .text("Age (Median)")
     .attr("value", 'age')
-    .attr("transform", ` translate(-105, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
+    .attr("transform", ` translate(-105, ${chartHeight / 2}) rotate(-90) scale(1.1)`);
 
   //add x-axes labels to chart
     var xSmokes = chartGroup.append("text")
-      .attr("x", chartWidth / 2.5)
+      .attr("x", chartWidth / 2)
       .attr("y", chartHeight + 10)
       .attr("class", "axisText xaxis active")
       .text("Smokers (%)")
@@ -150,7 +151,7 @@ function createScatter(data) {
       .attr('transform', 'scale(1.1)');
 
     var xObesity = chartGroup.append("text")
-      .attr("x", chartWidth / 2.5)
+      .attr("x", chartWidth / 2)
       .attr("y", chartHeight + 35)
       .attr("class", "axisText xaxis inactive")
       .text("Obesity (%)")
@@ -158,7 +159,7 @@ function createScatter(data) {
       .attr('transform', 'scale(1.1)');
 
     var xHealthcare = chartGroup.append("text")
-      .attr("x", chartWidth / 2.5)
+      .attr("x", chartWidth / 2)
       .attr("y", chartHeight + 60)
       .attr("class", "axisText xaxis inactive")
       .text("Lacks Healthcare (%)")
@@ -172,8 +173,12 @@ function createScatter(data) {
         var xValue = d3.select(this).attr("value");
         if (xValue !== chosenX) {
 
-          let chosenX = xValue;
-          let xLinScale = xScale(data, chosenX);
+          chosenX = xValue;
+          xLinScale = xScale(data, chosenX);
+          xAxis = d3.axisBottom(xLinScale);
+          chartGroup
+            .select('g')
+            .call(xAxis);
           circlesGroup = moveCirclesX(scatterCircles, xLinScale, chosenX, stateLabels);
 
           if (chosenX === "smokes") {
@@ -220,6 +225,10 @@ function createScatter(data) {
 
             chosenY = yValue;
             yLinScale = yScale(data, chosenY);
+            yAxis = d3.axisLeft(yLinScale);
+            chartGroup
+              .select('g')
+              .call(yAxis);
             circlesGroup = moveCirclesY(scatterCircles, yLinScale, chosenY, stateLabels);
 
             if (chosenY === "income") {
