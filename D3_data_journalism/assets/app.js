@@ -27,8 +27,10 @@ var chartGroup = svg.append('g')
   .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
 //set initial variables
-var chosenX = 'smokes'
-var chosenY = 'income'
+var chosenX = 'smokes';
+var chosenY = 'income';
+var xText = 'Smokers (%)';
+var yText = 'Median Income (USD)';
 /***********************************************************************/
 //function for converting the relevant lines of the csv to integers
 function rowUpdate(row) {
@@ -166,19 +168,39 @@ function createScatter(data) {
       .attr("value", 'healthcare')
       .attr('transform', 'scale(1.1)');
 
+    //add tooltip
+    var toolTip = d3.tip()
+                  .attr('class', 'd3-tip tooltip')
+                  .html((event, d) => {
+                    return `${d.state}<br>${xText}: ${d[chosenX]}<br>${yText}: ${d[chosenY]}`;
+                  });
+    chartGroup.call(toolTip);
+
+    scatterCircles
+      .on('mouseover', toolTip.show)
+      .on('mouseout', toolTip.hide);
+
     //handle click event for x axis
     chartGroup.selectAll(".xaxis")
       .on("click", function() {
         //get value of selection
         var xValue = d3.select(this).attr("value");
+        var newXText = d3.select(this).text();
         if (xValue !== chosenX) {
 
           chosenX = xValue;
+          xText = newXText;
           xLinScale = xScale(data, chosenX);
           xAxis = d3.axisBottom(xLinScale);
           chartGroup
             .select('g')
             .call(xAxis);
+          chartGroup
+            .select('.tooltip')
+            .html((event, d) => {
+              return `${d.state}<br>${xText}: ${d[chosenX]}<br>${yText}: ${d[chosenY]}`;
+            });
+          chartGroup.call(toolTip);
           circlesGroup = moveCirclesX(scatterCircles, xLinScale, chosenX, stateLabels);
 
           if (chosenX === "smokes") {
@@ -221,14 +243,22 @@ function createScatter(data) {
         .on("click", function() {
           //get value of selection
           var yValue = d3.select(this).attr("value");
+          var newYText = d3.select(this).text();
           if (yValue !== chosenY) {
 
             chosenY = yValue;
+            yText = newYText;
             yLinScale = yScale(data, chosenY);
             yAxis = d3.axisLeft(yLinScale);
             chartGroup
               .select('g')
               .call(yAxis);
+            chartGroup
+              .select('.tooltip')
+              .html((event, d) => {
+                return `${d.state}<br>${xText}: ${d[chosenX]}<br>${yText}: ${d[chosenY]}`;
+              });
+            chartGroup.call(toolTip);
             circlesGroup = moveCirclesY(scatterCircles, yLinScale, chosenY, stateLabels);
 
             if (chosenY === "income") {
