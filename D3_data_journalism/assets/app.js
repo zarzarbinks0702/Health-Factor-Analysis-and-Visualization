@@ -66,18 +66,22 @@ function xScale(data, chosenX) {
 
 /***********************************************************************/
 //create circles based on chosed data to transition between data points
-function moveCirclesX(circlesGroup, newXScale, chosenX) {
+function moveCirclesX(circlesGroup, newXScale, chosenX, stateLabels) {
 
   circlesGroup
     .attr("cx", d => newXScale(d[chosenX]));
+  stateLabels
+    .attr("x", d => newXScale(d[chosenX]))
 
-  return circlesGroup;
+  return circlesGroup, stateLabels;
 }
 
-function moveCirclesY(circlesGroup, newYScale, chosenY) {
+function moveCirclesY(circlesGroup, newYScale, chosenY, stateLabels) {
 
   circlesGroup
     .attr('cy', d => newYScale(d[chosenY]));
+  stateLabels
+    .attr("y", d => newYScale(d[chosenY]) + 7);
 
   return circlesGroup;
 }
@@ -170,7 +174,7 @@ function createScatter(data) {
 
           let chosenX = xValue;
           let xLinScale = xScale(data, chosenX);
-          circlesGroup = moveCirclesX(scatterCircles, xLinScale, chosenX);
+          circlesGroup = moveCirclesX(scatterCircles, xLinScale, chosenX, stateLabels);
 
           if (chosenX === "smokes") {
             xSmokes
@@ -216,7 +220,7 @@ function createScatter(data) {
 
             chosenY = yValue;
             yLinScale = yScale(data, chosenY);
-            circlesGroup = moveCirclesY(scatterCircles, yLinScale, chosenY);
+            circlesGroup = moveCirclesY(scatterCircles, yLinScale, chosenY, stateLabels);
 
             if (chosenY === "income") {
               yIncome
