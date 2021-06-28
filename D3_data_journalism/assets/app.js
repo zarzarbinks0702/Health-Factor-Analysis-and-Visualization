@@ -45,54 +45,38 @@ function rowUpdate(row) {
 d3.csv(healthData, rowUpdate).then(createScatter);
 /***********************************************************************/
 //create y axis scale
-function yScale(data, chosenX) {
+function yScale(data, chosenY) {
 
   let yLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d[chosenX])])
+    .domain([0, d3.max(data, (d) => d[chosenY])])
     .range([chartHeight, 0]);
 
   return yLinScale;
 }
 
 //create x axis scale
-function xScale(data, chosenY) {
+function xScale(data, chosenX) {
 
   let xLinScale = d3.scaleLinear()
-    .domain([0, d3.max(data, (d) => d[chosenY])])
+    .domain([0, d3.max(data, (d) => d[chosenX])])
     .range([0, chartWidth]);
 
   return xLinScale;
 }
-/***********************************************************************/
-//following block from week 16-D3, Day 3, Activity 12
-//update x axis when a label is clicked
-function renderX(newXScale, xAxis) {
-  var bottomAxis = d3.axisBottom(newXScale);
 
-  xAxis.transition()
-    .duration(1000)
-    .call(bottomAxis);
-
-  return xAxis;
-}
-
-//update y axis when a label is clicked
-function renderAxes(newYScale, yAxis) {
-  var leftAxis = d3.axisLeft(newYScale);
-
-  yAxis.transition()
-    .duration(1000)
-    .call(leftAxis);
-
-  return yAxis;
-}
 /***********************************************************************/
 //create circles based on chosed data to transition between data points
-function renderCircles(circlesGroup, newXScale, chosenX, newYScale, chosenY) {
+function moveCirclesX(circlesGroup, newXScale, chosenX) {
 
-  circlesGroup.transition()
-    .duration(1000)
-    .attr("cx", d => newXScale(d[chosenX]))
+  circlesGroup
+    .attr("cx", d => newXScale(d[chosenX]));
+
+  return circlesGroup;
+}
+
+function moveCirclesY(circlesGroup, newYScale, chosenY) {
+
+  circlesGroup
     .attr('cy', d => newYScale(d[chosenY]));
 
   return circlesGroup;
@@ -100,7 +84,6 @@ function renderCircles(circlesGroup, newXScale, chosenX, newYScale, chosenY) {
 /***********************************************************************/
 //function to create the scatter chart
 function createScatter(data) {
-  console.table(data);
 
   //set x and y axis scales
   var xLinScale = xScale(data, chosenX);
@@ -136,40 +119,46 @@ function createScatter(data) {
 
   //add y-axes labels to chart
     var yIncome = chartGroup.append("text")
-    .attr("class", "axisText yaxis")
+    .attr("class", "axisText yaxis active")
     .text("Median Income (USD)")
+    .attr("value", 'income')
     .attr("transform", ` translate(-55, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
     var yPoverty = chartGroup.append("text")
-    .attr("class", "axisText yaxis")
+    .attr("class", "axisText yaxis inactive")
     .text("In Poverty (%)")
+    .attr("value", 'poverty')
     .attr("transform", ` translate(-80, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
     var yAge = chartGroup.append("text")
-    .attr("class", "axisText yaxis")
+    .attr("class", "axisText yaxis inactive")
     .text("Age (Median)")
+    .attr("value", 'age')
     .attr("transform", ` translate(-105, ${chartHeight / 1.4}) rotate(-90) scale(1.1)`);
 
   //add x-axes labels to chart
     var xSmokes = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 10)
-      .attr("class", "axisText xaxis")
+      .attr("class", "axisText xaxis active")
       .text("Smokers (%)")
+      .attr("value", 'smokes')
       .attr('transform', 'scale(1.1)');
 
     var xObesity = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 35)
-      .attr("class", "axisText xaxis")
+      .attr("class", "axisText xaxis inactive")
       .text("Obesity (%)")
+      .attr("value", 'obesity')
       .attr('transform', 'scale(1.1)');
 
     var xHealthcare = chartGroup.append("text")
       .attr("x", chartWidth / 2.5)
       .attr("y", chartHeight + 60)
-      .attr("class", "axisText xaxis")
+      .attr("class", "axisText xaxis inactive")
       .text("Lacks Healthcare (%)")
+      .attr("value", 'healthcare')
       .attr('transform', 'scale(1.1)');
 
     //handle click event for x axis
@@ -179,10 +168,9 @@ function createScatter(data) {
         var xValue = d3.select(this).attr("value");
         if (xValue !== chosenX) {
 
-          chosenX = xValue;
-          xLinearScale = xScale(data, chosenX);
-          xAxis = renderAxes(xLinearScale, xAxis);
-          circlesGroup = renderCircles(circlesGroup, xLinScale, chosenX, newYScale, chosenY);
+          let chosenX = xValue;
+          let xLinScale = xScale(data, chosenX);
+          circlesGroup = moveCirclesX(scatterCircles, xLinScale, chosenX);
 
           if (chosenX === "smokes") {
             xSmokes
@@ -206,7 +194,7 @@ function createScatter(data) {
               .classed("active", false)
               .classed("inactive", true);
           }
-          else {
+          else if (chosenX === 'healthcare') {
             xSmokes
               .classed("active", false)
               .classed("inactive", true);
@@ -227,9 +215,8 @@ function createScatter(data) {
           if (yValue !== chosenY) {
 
             chosenY = yValue;
-            yLinearScale = yScale(data, chosenY);
-            yAxis = renderAxes(yLinearScale, yAxis);
-            circlesGroup = renderCircles(circlesGroup, xLinScale, chosenX, newYScale, chosenY);
+            yLinScale = yScale(data, chosenY);
+            circlesGroup = moveCirclesY(scatterCircles, yLinScale, chosenY);
 
             if (chosenY === "income") {
               yIncome
@@ -242,7 +229,7 @@ function createScatter(data) {
                 .classed("active", false)
                 .classed("inactive", true);
             }
-            else if (chosenX === 'poverty') {
+            else if (chosenY === 'poverty') {
               yIncome
                 .classed("active", false)
                 .classed("inactive", true);
@@ -253,7 +240,7 @@ function createScatter(data) {
                 .classed("active", false)
                 .classed("inactive", true);
             }
-            else {
+            else if (chosenY === 'age') {
               yIncome
                 .classed("active", false)
                 .classed("inactive", true);
