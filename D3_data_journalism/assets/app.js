@@ -99,8 +99,8 @@ function createScatter(data) {
   //add the axis to the chart
   let xAxis = d3.axisBottom(xLinScale);
   let yAxis = d3.axisLeft(yLinScale);
-  chartGroup.append("g").call(yAxis);
-  chartGroup.append("g").call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
+  chartGroup.append("g").classed('yAxisLine', true).call(yAxis);
+  chartGroup.append("g").classed('xAxisLine', true).call(xAxis).attr("transform", `translate(0, ${chartHeight})`);
 
   //create scatter circles
   var scatterCircles = chartGroup.selectAll(".stateCircle")
@@ -110,8 +110,8 @@ function createScatter(data) {
       .classed('.stateCircle', true)
       .attr("cx", d => xLinScale(d[chosenX]))
       .attr("cy", d => yLinScale(d[chosenY]))
-      .attr("r", "15")
-      .attr("fill", "blue")
+      .attr("r", "20")
+      .attr("fill", "#affaaf")
       .attr("opacity", '0.5');
 
   //add state abbreveations to the circles
@@ -180,6 +180,10 @@ function createScatter(data) {
       .on('mouseover', toolTip.show)
       .on('mouseout', toolTip.hide);
 
+    stateLabels
+      .on('mouseover', toolTip.show)
+      .on('mouseout', toolTip.hide);
+
     //handle click event for x axis
     chartGroup.selectAll(".xaxis")
       .on("click", function() {
@@ -193,8 +197,9 @@ function createScatter(data) {
           xLinScale = xScale(data, chosenX);
           xAxis = d3.axisBottom(xLinScale);
           chartGroup
-            .select('g')
-            .call(xAxis);
+            .select('.xAxisLine')
+            .call(xAxis)
+            .attr("transform", `translate(0, ${chartHeight})`);
           chartGroup
             .select('.tooltip')
             .html((event, d) => {
@@ -251,7 +256,7 @@ function createScatter(data) {
             yLinScale = yScale(data, chosenY);
             yAxis = d3.axisLeft(yLinScale);
             chartGroup
-              .select('g')
+              .select('.yAxisLine')
               .call(yAxis);
             chartGroup
               .select('.tooltip')
