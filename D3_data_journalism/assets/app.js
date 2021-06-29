@@ -3,8 +3,8 @@
 const healthData = 'assets/data.csv'
 
 //set static svg/chart variables
-var svgWidth = 960;
-var svgHeight = 500;
+var svgWidth = 1100;
+var svgHeight = 800;
 
 var margin = {
   top: 30,
@@ -20,7 +20,8 @@ var chartHeight = svgHeight - margin.top - margin.bottom;
 var svg = d3.select('#scatter')
   .append('svg')
   .attr('width', svgWidth)
-  .attr('height', svgHeight);
+  .attr('height', svgHeight)
+  .classed('chart', true);
 
 //append svg to chart group
 var chartGroup = svg.append('g')
@@ -110,7 +111,7 @@ function createScatter(data) {
       .classed('.stateCircle', true)
       .attr("cx", d => xLinScale(d[chosenX]))
       .attr("cy", d => yLinScale(d[chosenY]))
-      .attr("r", "20")
+      .attr("r", "15")
       .attr("fill", "#affaaf")
       .attr("opacity", '0.5');
 
@@ -146,7 +147,7 @@ function createScatter(data) {
   //add x-axes labels to chart
     var xSmokes = chartGroup.append("text")
       .attr("x", chartWidth / 2)
-      .attr("y", chartHeight + 10)
+      .attr("y", chartHeight)
       .attr("class", "axisText xaxis active")
       .text("Smokers (%)")
       .attr("value", 'smokes')
@@ -154,7 +155,7 @@ function createScatter(data) {
 
     var xObesity = chartGroup.append("text")
       .attr("x", chartWidth / 2)
-      .attr("y", chartHeight + 35)
+      .attr("y", chartHeight + 20)
       .attr("class", "axisText xaxis inactive")
       .text("Obesity (%)")
       .attr("value", 'obesity')
@@ -162,7 +163,7 @@ function createScatter(data) {
 
     var xHealthcare = chartGroup.append("text")
       .attr("x", chartWidth / 2)
-      .attr("y", chartHeight + 60)
+      .attr("y", chartHeight + 40)
       .attr("class", "axisText xaxis inactive")
       .text("Lacks Healthcare (%)")
       .attr("value", 'healthcare')
